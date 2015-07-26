@@ -9,7 +9,7 @@ import java.util.ArrayList;
 /**
  * Created by Joseph on 7/18/2015.
  */
-public class ApiTest extends AndroidTestCase {
+public class AndroidAPITest extends AndroidTestCase {
     public void testIfExpandableListAdapter_WhenGivenEmptyObjects_IsEmpty() throws Exception {
         ExpandableListAdapter list = new ExpandableListAdapter(new ArrayList<String>(), new ArrayList<ArrayList<String>>());
         assertEquals(list.isEmpty(), true);
