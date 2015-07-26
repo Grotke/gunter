@@ -30,21 +30,29 @@ import java.util.List;
 //TODO Find way to only check videos that are recent as X.
 public class MainActivity extends ActionBarActivity {
     private static YouTube youtube;
-    ExpandableListAdapter listAdapter;
-    ExpandableListView expListView;
-    ArrayList<String> parents;
-    ArrayList<ArrayList<String>> children;
+    private ExpandableListAdapter listAdapter;
+    private ExpandableListView expListView;
+    private ArrayList<String> parents;
+    private ArrayList<ArrayList<String>> children;
+    private String[] channelIds = {"UCq54nlcoX-0pLcN5RhxHyug","UCqg2eLFNUu3QN3dttNeOWkw"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        setupYoutube();
         expListView = (ExpandableListView) findViewById(R.id.channel_list);
         //prepareListData();
         parents = new ArrayList<String>();
         children = new ArrayList<ArrayList<String>>();
-        new RetrieveFeedTask().execute("UCq54nlcoX-0pLcN5RhxHyug");
+        listAdapter = new ExpandableListAdapter(parents,children);
+        listAdapter.setInflater((LayoutInflater)
+                getSystemService(Context.LAYOUT_INFLATER_SERVICE));
+        expListView.setAdapter(listAdapter);
+        for(int i = 0; i < channelIds.length; i++) {
+            new RetrieveFeedTask(channelIds[i], i).execute();
+        }
         //getYoutubeChannelName("UCq54nlcoX-0pLcN5RhxHyug");
     }
 
@@ -92,19 +100,7 @@ public class MainActivity extends ActionBarActivity {
         children.add(newChild);
     }
 
-    public String getYoutubeChannelName(String channelId){
-        HttpTransport transport = new NetHttpTransport();
-        JsonFactory jsonFactory = new JacksonFactory();
-        HttpRequestInitializer initial  = new HttpRequestInitializer() {
-            @Override
-            public void initialize(HttpRequest request) throws IOException {
-
-            }
-        };
-
-        youtube = new YouTube.Builder(transport, jsonFactory, initial)
-        .setApplicationName("gunter").build();
-
+    public void getYoutubeChannelName(String channelId, int index){
         try {
             YouTube.Channels.List request = youtube.channels().list("snippet,contentDetails");
             request.setId(channelId);
@@ -113,7 +109,7 @@ public class MainActivity extends ActionBarActivity {
             ChannelListResponse response = request.execute();
             List<Channel> channels = response.getItems();
             Log.d("channel", channels.get(0).getSnippet().getTitle());
-            parents.add(channels.get(0).getSnippet().getTitle());
+            parents.add(index,channels.get(0).getSnippet().getTitle());
             String uploadsId = channels.get(0).getContentDetails().getRelatedPlaylists().getUploads();
             YouTube.PlaylistItems.List playlistRequest = youtube.playlistItems().list("snippet");
             playlistRequest.setPlaylistId(uploadsId);
@@ -126,32 +122,50 @@ public class MainActivity extends ActionBarActivity {
                 PlaylistItem item = itemItr.next();
                 titles.add(item.getSnippet().getTitle());
             }
-            children.add(titles);
+            children.add(index,titles);
         }
         catch (Exception e){
             Log.e("error",e.getMessage());
         }
-        return "hello";
     }
 
-    class RetrieveFeedTask extends AsyncTask<String, Void, String> {
+    private class RetrieveFeedTask extends AsyncTask<String, Void, Void> {
 
         private Exception exception;
+        private String channelId;
+        private int position;
 
-        protected String doInBackground(String... channelIds) {
+        public RetrieveFeedTask(String channelId, int position){
+            this.channelId = channelId;
+            this.position = position;
+        }
+
+        protected Void doInBackground(String... channelIds) {
             try {
-                return getYoutubeChannelName(channelIds[0]);
+                getYoutubeChannelName(channelId,position);
             } catch (Exception e) {
                 this.exception = e;
-                return null;
             }
+            return null;
         }
 
-        protected void onPostExecute(String title) {
-            listAdapter = new ExpandableListAdapter(parents,children);
-            listAdapter.setInflater((LayoutInflater)
-                    getSystemService(Context.LAYOUT_INFLATER_SERVICE));
-            expListView.setAdapter(listAdapter);
+        protected void onPostExecute(Void i) {
+            listAdapter.update(parents,children);
         }
+    }
+
+
+    private void setupYoutube(){
+        HttpTransport transport = new NetHttpTransport();
+        JsonFactory jsonFactory = new JacksonFactory();
+        HttpRequestInitializer initial  = new HttpRequestInitializer() {
+            @Override
+            public void initialize(HttpRequest request) throws IOException {
+
+            }
+        };
+
+        youtube = new YouTube.Builder(transport, jsonFactory, initial)
+                .setApplicationName("gunter").build();
     }
 }

@@ -52,6 +52,20 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter{
         return parentItems.size();
     }
 
+    public void addParent(String parent, int position){
+        parentItems.add(parent);
+    }
+
+    public void addChild(ArrayList<String> child, int position){
+        childItems.add(child);
+    }
+
+    public void update(ArrayList<String> parents, ArrayList<ArrayList<String>> children){
+        parentItems = parents;
+        childItems = children;
+        notifyDataSetChanged();
+    }
+
     @Override
     //TODO Adapt this for video ids.
     public long getChildId(int groupPosition, int childPosition) {
