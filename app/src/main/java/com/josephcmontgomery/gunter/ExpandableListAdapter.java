@@ -14,6 +14,7 @@ import java.util.ArrayList;
  */
 //TODO Adapt this for series and channels.
 public class ExpandableListAdapter extends BaseExpandableListAdapter{
+    ArrayList<YoutubeData> data;
     ArrayList<String> parentItems;
     ArrayList<ArrayList<String>> childItems;
     LayoutInflater inflater;
@@ -22,6 +23,11 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter{
         inflater = null;
         parentItems = parents;
         childItems = children;
+    }
+
+    public ExpandableListAdapter(ArrayList<YoutubeData> data){
+        this.data = data;
+        inflater = null;
     }
 
     public void setInflater(LayoutInflater inflater){
@@ -49,7 +55,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter{
 
     @Override
     public int getGroupCount() {
-        return parentItems.size();
+        //return parentItems.size();
+        return data.size();
     }
 
     public void addParent(String parent, int position){
@@ -74,7 +81,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter{
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return childItems.get(groupPosition).size();
+        //return childItems.get(groupPosition).size();
+        return data.get(groupPosition).videoTitles.size();
     }
 
     @Override
@@ -85,7 +93,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter{
 
     @Override
     public Object getGroup(int groupPosition) {
-        return parentItems.get(groupPosition);
+        //return parentItems.get(groupPosition);
+        return data.get(groupPosition).channelTitle;
     }
 
     @Override
@@ -109,6 +118,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter{
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return childItems.get(groupPosition).get(childPosition);
+        //return childItems.get(groupPosition).get(childPosition);
+        return data.get(groupPosition).videoTitles.get(childPosition);
     }
 }

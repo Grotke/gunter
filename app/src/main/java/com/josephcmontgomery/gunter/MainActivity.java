@@ -34,26 +34,28 @@ public class MainActivity extends ActionBarActivity {
     private ExpandableListView expListView;
     private ArrayList<String> parents;
     private ArrayList<ArrayList<String>> children;
-    private String[] channelIds = {"UCq54nlcoX-0pLcN5RhxHyug","UCqg2eLFNUu3QN3dttNeOWkw"};
+    private YoutubeDataFetcher fetcher;
+    private ArrayList<String> channelIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setupYoutube();
+        fetcher = new YoutubeDataFetcher();
+        //setupYoutube();
         expListView = (ExpandableListView) findViewById(R.id.channel_list);
-        //prepareListData();
-        parents = new ArrayList<String>();
-        children = new ArrayList<ArrayList<String>>();
-        listAdapter = new ExpandableListAdapter(parents,children);
+        //parents = new ArrayList<String>();
+        //children = new ArrayList<ArrayList<String>>();
+        //listAdapter = new ExpandableListAdapter(parents,children);
+        createChannelIds();
+        listAdapter = new ExpandableListAdapter(fetcher.getChannelData(channelIds));
         listAdapter.setInflater((LayoutInflater)
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE));
         expListView.setAdapter(listAdapter);
-        for(int i = 0; i < channelIds.length; i++) {
+        /*for(int i = 0; i < channelIds.length; i++) {
             new RetrieveFeedTask(channelIds[i], i).execute();
-        }
-        //getYoutubeChannelName("UCq54nlcoX-0pLcN5RhxHyug");
+        }*/
     }
 
     @Override
@@ -78,28 +80,6 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void prepareListData(){
-        prepareParents();
-        prepareChildren();
-    }
-
-    public void prepareParents(){
-        parents = new ArrayList<String>();
-        parents.add("Seananners");
-        parents.add("Quake");
-    }
-
-    public void prepareChildren(){
-        children = new ArrayList<ArrayList<String>>();
-        ArrayList<String> child = new ArrayList<String>();
-        child.add("New vid 1");
-        child.add("New vid 2");
-        children.add(child);
-        ArrayList<String> newChild = new ArrayList<String>();
-        newChild.add("Quake vid 1");
-        children.add(newChild);
-    }
-
     public void getYoutubeChannelName(String channelId, int index){
         try {
             YouTube.Channels.List request = youtube.channels().list("snippet,contentDetails");
@@ -108,9 +88,9 @@ public class MainActivity extends ActionBarActivity {
             request.setFields("items(snippet/title,contentDetails/relatedPlaylists/uploads)");
             ChannelListResponse response = request.execute();
             List<Channel> channels = response.getItems();
-            Log.d("channel", channels.get(0).getSnippet().getTitle());
             parents.add(index,channels.get(0).getSnippet().getTitle());
             String uploadsId = channels.get(0).getContentDetails().getRelatedPlaylists().getUploads();
+
             YouTube.PlaylistItems.List playlistRequest = youtube.playlistItems().list("snippet");
             playlistRequest.setPlaylistId(uploadsId);
             playlistRequest.setKey(DeveloperKey.DEVELOPER_KEY);
@@ -129,7 +109,7 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private class RetrieveFeedTask extends AsyncTask<String, Void, Void> {
+    private class RetrieveFeedTask extends AsyncTask<String, Integer, Void> {
 
         private Exception exception;
         private String channelId;
@@ -167,5 +147,11 @@ public class MainActivity extends ActionBarActivity {
 
         youtube = new YouTube.Builder(transport, jsonFactory, initial)
                 .setApplicationName("gunter").build();
+    }
+
+    private void createChannelIds(){
+        channelIds = new ArrayList<String>();
+        channelIds.add("UCq54nlcoX-0pLcN5RhxHyug");
+        channelIds.add("UCqg2eLFNUu3QN3dttNeOWkw");
     }
 }
