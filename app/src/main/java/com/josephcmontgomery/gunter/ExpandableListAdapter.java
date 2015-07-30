@@ -15,15 +15,7 @@ import java.util.ArrayList;
 //TODO Adapt this for series and channels.
 public class ExpandableListAdapter extends BaseExpandableListAdapter{
     ArrayList<YoutubeData> data;
-    ArrayList<String> parentItems;
-    ArrayList<ArrayList<String>> childItems;
     LayoutInflater inflater;
-
-    public ExpandableListAdapter(ArrayList<String> parents, ArrayList<ArrayList<String>> children){
-        inflater = null;
-        parentItems = parents;
-        childItems = children;
-    }
 
     public ExpandableListAdapter(ArrayList<YoutubeData> data){
         this.data = data;
@@ -55,21 +47,16 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter{
 
     @Override
     public int getGroupCount() {
-        //return parentItems.size();
         return data.size();
     }
 
-    public void addParent(String parent, int position){
-        parentItems.add(parent);
+    public void addData(YoutubeData data){
+        this.data.add(data);
+        notifyDataSetChanged();
     }
 
-    public void addChild(ArrayList<String> child, int position){
-        childItems.add(child);
-    }
-
-    public void update(ArrayList<String> parents, ArrayList<ArrayList<String>> children){
-        parentItems = parents;
-        childItems = children;
+    public void update(ArrayList<YoutubeData> data){
+        this.data = data;
         notifyDataSetChanged();
     }
 
@@ -81,7 +68,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter{
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        //return childItems.get(groupPosition).size();
         return data.get(groupPosition).videoTitles.size();
     }
 
@@ -93,7 +79,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter{
 
     @Override
     public Object getGroup(int groupPosition) {
-        //return parentItems.get(groupPosition);
         return data.get(groupPosition).channelTitle;
     }
 
@@ -118,7 +103,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter{
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        //return childItems.get(groupPosition).get(childPosition);
         return data.get(groupPosition).videoTitles.get(childPosition);
     }
 }
