@@ -1,16 +1,15 @@
 package com.josephcmontgomery.gunter.tests;
 
 import android.test.AndroidTestCase;
+import android.util.Log;
 
-import com.josephcmontgomery.gunter.ExpandableListAdapter;
-
-import java.util.ArrayList;
+import com.google.api.client.util.DateTime;
 
 /**
  * Created by Joseph on 7/18/2015.
  */
 public class AndroidAPITest extends AndroidTestCase {
-    public void testIfExpandableListAdapter_WhenGivenEmptyObjects_IsEmpty() throws Exception {
+    /*public void testIfExpandableListAdapter_WhenGivenEmptyObjects_IsEmpty() throws Exception {
         ExpandableListAdapter list = new ExpandableListAdapter(new ArrayList<String>(), new ArrayList<ArrayList<String>>());
         assertEquals(list.isEmpty(), true);
     }
@@ -24,6 +23,8 @@ public class AndroidAPITest extends AndroidTestCase {
     }
 
     public void testIfExpandableListAdapter_WhenHasTwoGroups_ReturnsTwo() throws Exception{
+        ArrayList<YoutubeData> data = new ArrayList<YoutubeData>(2);
+        data.add(prepareYoutubeData("Seananners", ))
         String[] parents = {"Seananners", "Quake"};
         ArrayList<String> parentList = prepareSingleList(parents);
         String[][] children = {{"Vid 1", "Vid 2"}, {"Vid 3","Vid 4"}};
@@ -57,5 +58,32 @@ public class AndroidAPITest extends AndroidTestCase {
             returnLists.add(prepareSingleList(stringList));
         }
         return returnLists;
+    }
+
+    private YoutubeData prepareYoutubeData(String channel, String[] videoTitles){
+        return new YoutubeData(channel, new ArrayList<String>(videoTitles));
+    }*/
+
+    public void testIfDateTime_WhenGivenDateString_HasValueGreaterThanZero() throws Exception{
+        DateTime date = DateTime.parseRfc3339("2015-07-31T04:32:34.000Z");
+        Log.d("VALUE", String.valueOf(date.getValue()));
+        assertTrue(date.getValue() > 0);
+    }
+
+    public void testIfDateTime_WhenConvertsToRFC_ReturnsInputStringWhenConvertBack() throws Exception{
+        DateTime date = DateTime.parseRfc3339("2015-07-31T04:32:34.000Z");
+        Log.d("RFC STRING", date.toStringRfc3339());
+        Log.d("NORMAL STRING", date.toString());
+        assertEquals(date.toStringRfc3339(), "2015-07-31T04:32:34.000Z");
+    }
+
+    public void testIfDateTime_WhenGivenDifferentDateSpans_ReturnsSameValue() throws Exception{
+        DateTime date1 = DateTime.parseRfc3339("2015-07-31T04:32:34.000Z");
+        DateTime earlierDate1 = DateTime.parseRfc3339("2015-07-17T04:32:34.000Z");
+        DateTime date2 = DateTime.parseRfc3339("2012-04-17T04:32:34.000Z");
+        DateTime earlierDate2 = DateTime.parseRfc3339("2012-04-03T04:32:34.000Z");
+        long twoWeekValue1 = date1.getValue() - earlierDate1.getValue();
+        long twoWeekValue2 = date2.getValue() - earlierDate2.getValue();
+        assertEquals(twoWeekValue1,twoWeekValue2);
     }
 }
