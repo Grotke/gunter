@@ -24,21 +24,20 @@ public class TimeKeeper {
      * @param videoUploadTime Time video was uploaded.
      * @return Boolean telling whether video is recent enough to be included.
      */
-    static public boolean ShouldGetVideo(long lastUpdateTime, String videoUploadTime){
+    static public boolean ShouldGetVideo(DateTime lastUpdateTime, DateTime videoUploadTime){
         long currentTime = System.currentTimeMillis();
-        long videoTime = DateTime.parseRfc3339(videoUploadTime).getValue();
+        long videoTime = videoUploadTime.getValue();
         long timeSinceVideoUpload = currentTime - videoTime;
-        long timeSinceAppUpdated = currentTime - lastUpdateTime;
+        long timeSinceAppUpdated = currentTime - lastUpdateTime.getValue();
         long lastCheck = oldestVideoTimeFrame;
         if(lastCheckedWithinTimeFrame(timeSinceAppUpdated)){
             lastCheck = timeSinceAppUpdated;
         }
-
         return videoUploadedAfterLastCheck(timeSinceVideoUpload, lastCheck);
     }
 
-    static public boolean ShouldGetVideo(String videoUploadTime){
-        return ShouldGetVideo(0, videoUploadTime);
+    static public boolean ShouldGetVideo(DateTime videoUploadTime){
+        return ShouldGetVideo(new DateTime(0), videoUploadTime);
     }
 
     static private boolean lastCheckedWithinTimeFrame(long timeSinceAppUpdated){

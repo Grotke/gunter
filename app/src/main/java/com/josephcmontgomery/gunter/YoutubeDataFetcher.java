@@ -9,6 +9,7 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelListResponse;
@@ -69,15 +70,35 @@ public class YoutubeDataFetcher {
         YouTube.PlaylistItems.List playlistRequest = youtube.playlistItems().list("snippet");
         playlistRequest.setPlaylistId(uploadsId);
         playlistRequest.setKey(DeveloperKey.DEVELOPER_KEY);
-        PlaylistItemListResponse playlistResponse = playlistRequest.execute();
-        return playlistResponse.getItems();
+        String nextToken = "";
+        List<PlaylistItem> uploadsPlaylist = new ArrayList<PlaylistItem>();
+        do {
+            playlistRequest.setPageToken(nextToken);
+            PlaylistItemListResponse playlistResponse = playlistRequest.execute();
+            Iterator<PlaylistItem> itemItr = playlistResponse.getItems().iterator();
+            while(itemItr.hasNext()){
+                PlaylistItem item = itemItr.next();
+                if(TimeKeeper.ShouldGetVideo(getUploadDate(item))){
+                    uploadsPlaylist.add(item);
+                }
+                else{
+                    nextToken = null;
+                    break;
+                }
+            }
+            if(nextToken != null){
+                nextToken = playlistResponse.getNextPageToken();
+            }
+        } while (nextToken != null);
+
+        return uploadsPlaylist;
     }
 
     private String getVideoTitle(PlaylistItem videoItem){
         return videoItem.getSnippet().getTitle();
     }
 
-    private String getUploadDate(PlaylistItem videoItem){ return null;}
+    private DateTime getUploadDate(PlaylistItem videoItem){ return videoItem.getSnippet().getPublishedAt();}
 
     private ArrayList<String> getVideoTitles(List<PlaylistItem> playlistItems){
         ArrayList<String> videoTitles = new ArrayList<String>();

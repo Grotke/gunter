@@ -55,7 +55,10 @@ public class MainActivity extends ActionBarActivity {
 
     private void createChannelIds(){
         channelIds = new ArrayList<String>();
-        channelIds.add("UCq54nlcoX-0pLcN5RhxHyug");
         channelIds.add("UCqg2eLFNUu3QN3dttNeOWkw");
+        channelIds.add("UCVdtW2E4vwvf8yh4FY5us9A");
+        channelIds.add("UCN-Klifn9C7kINwpIA0uOHw");
+        channelIds.add("UCV3kayetaucpObzusJbk9ag");
+        channelIds.add("UCq54nlcoX-0pLcN5RhxHyug");
     }
 }
