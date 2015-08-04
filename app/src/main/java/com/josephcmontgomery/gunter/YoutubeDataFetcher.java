@@ -13,8 +13,8 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelListResponse;
-import com.google.api.services.youtube.model.PlaylistItem;
-import com.google.api.services.youtube.model.PlaylistItemListResponse;
+import com.google.api.services.youtube.model.SearchListResponse;
+import com.google.api.services.youtube.model.SearchResult;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,7 +45,10 @@ public class YoutubeDataFetcher {
             YoutubeData channelData = new YoutubeData();
             Channel channel = getChannel(channelId);
             channelData.channelTitle = getChannelTitle(channel);
-            channelData.videoTitles = getVideoTitles(getUploadsPlaylist(getUploadsId(channel)));
+            channelData.videoTitles = getVideoTitles(getSearchResults(channelId));
+            if(channelData.videoTitles.isEmpty()){
+                channelData.videoTitles.add("No Recent Videos Found.");
+            }
             return channelData;
     }
 
@@ -53,58 +56,51 @@ public class YoutubeDataFetcher {
         return channel.getSnippet().getTitle();
     }
 
-    private String getUploadsId(Channel channel){
-        return channel.getContentDetails().getRelatedPlaylists().getUploads();
-    }
-
     private Channel getChannel(String channelId) throws Exception{
-        YouTube.Channels.List request = youtube.channels().list("snippet,contentDetails");
+        YouTube.Channels.List request = youtube.channels().list("snippet");
         request.setId(channelId);
         request.setKey(DeveloperKey.DEVELOPER_KEY);
-        request.setFields("items(snippet/title,contentDetails/relatedPlaylists/uploads)");
+        request.setFields("items(snippet/title)");
         ChannelListResponse response = request.execute();
         return response.getItems().get(0);
     }
 
-    private List<PlaylistItem> getUploadsPlaylist(String uploadsId) throws Exception{
-        YouTube.PlaylistItems.List playlistRequest = youtube.playlistItems().list("snippet");
-        playlistRequest.setPlaylistId(uploadsId);
-        playlistRequest.setKey(DeveloperKey.DEVELOPER_KEY);
-        String nextToken = "";
-        List<PlaylistItem> uploadsPlaylist = new ArrayList<PlaylistItem>();
-        do {
-            playlistRequest.setPageToken(nextToken);
-            PlaylistItemListResponse playlistResponse = playlistRequest.execute();
-            Iterator<PlaylistItem> itemItr = playlistResponse.getItems().iterator();
-            while(itemItr.hasNext()){
-                PlaylistItem item = itemItr.next();
-                if(TimeKeeper.ShouldGetVideo(getUploadDate(item))){
-                    uploadsPlaylist.add(item);
-                }
-                else{
-                    nextToken = null;
-                    break;
-                }
-            }
-            if(nextToken != null){
-                nextToken = playlistResponse.getNextPageToken();
-            }
-        } while (nextToken != null);
-
-        return uploadsPlaylist;
+    private YouTube.Search.List setUpSearchRequest(String channelId) throws Exception{
+        long resultsPerPage = 30;
+        YouTube.Search.List searchRequest = youtube.search().list("snippet");
+        searchRequest.setChannelId(channelId);
+        searchRequest.setOrder("date");
+        searchRequest.setType("video");
+        searchRequest.setMaxResults(resultsPerPage);
+        searchRequest.setPublishedAfter(TimeKeeper.getOldestAllowedVideoDate(new DateTime(System.currentTimeMillis())));
+        searchRequest.setFields("items(snippet/title), nextPageToken");
+        searchRequest.setKey(DeveloperKey.DEVELOPER_KEY);
+        return searchRequest;
     }
 
-    private String getVideoTitle(PlaylistItem videoItem){
+    private List<SearchResult> getSearchResults(String channelId) throws Exception{
+        YouTube.Search.List searchRequest = setUpSearchRequest(channelId);
+        String nextToken = "";
+        List<SearchResult> searchResults = new ArrayList<SearchResult>();
+        do {
+            searchRequest.setPageToken(nextToken);
+            SearchListResponse searchResponse = searchRequest.execute();
+            searchResults.addAll(searchResponse.getItems());
+            nextToken = searchResponse.getNextPageToken();
+        } while (nextToken != null);
+
+        return searchResults;
+    }
+
+    private String getVideoTitle(SearchResult videoItem){
         return videoItem.getSnippet().getTitle();
     }
 
-    private DateTime getUploadDate(PlaylistItem videoItem){ return videoItem.getSnippet().getPublishedAt();}
-
-    private ArrayList<String> getVideoTitles(List<PlaylistItem> playlistItems){
+    private ArrayList<String> getVideoTitles(List<SearchResult> searchResults){
         ArrayList<String> videoTitles = new ArrayList<String>();
-        Iterator<PlaylistItem> itemItr = playlistItems.iterator();
+        Iterator<SearchResult> itemItr = searchResults.iterator();
         while(itemItr.hasNext()){
-            PlaylistItem item = itemItr.next();
+            SearchResult item = itemItr.next();
             videoTitles.add(getVideoTitle(item));
         }
         return videoTitles;

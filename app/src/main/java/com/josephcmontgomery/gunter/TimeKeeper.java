@@ -41,10 +41,14 @@ public class TimeKeeper {
     }
 
     static private boolean lastCheckedWithinTimeFrame(long timeSinceAppUpdated){
-        return timeSinceAppUpdated < oldestVideoTimeFrame;
+        return timeSinceAppUpdated <= oldestVideoTimeFrame;
     }
 
     static private boolean videoUploadedAfterLastCheck(long timeSinceVideoUpload, long lastCheck){
-        return timeSinceVideoUpload < lastCheck;
+        return timeSinceVideoUpload <= lastCheck;
+    }
+
+    static public DateTime getOldestAllowedVideoDate(DateTime currentTime){
+        return new DateTime(currentTime.getValue() - oldestVideoTimeFrame);
     }
 }
