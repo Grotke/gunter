@@ -9,7 +9,6 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelListResponse;
@@ -46,9 +45,9 @@ public class YoutubeDataFetcher {
             Channel channel = getChannel(channelId);
             channelData.channelTitle = getChannelTitle(channel);
             channelData.videoTitles = getVideoTitles(getSearchResults(channelId));
-            if(channelData.videoTitles.isEmpty()){
+            /*if(channelData.videoTitles.isEmpty()){
                 channelData.videoTitles.add("No Recent Videos Found.");
-            }
+            }*/
             return channelData;
     }
 
@@ -66,13 +65,13 @@ public class YoutubeDataFetcher {
     }
 
     private YouTube.Search.List setUpSearchRequest(String channelId) throws Exception{
-        long resultsPerPage = 30;
+        long resultsPerPage = 50;
         YouTube.Search.List searchRequest = youtube.search().list("snippet");
         searchRequest.setChannelId(channelId);
         searchRequest.setOrder("date");
         searchRequest.setType("video");
         searchRequest.setMaxResults(resultsPerPage);
-        searchRequest.setPublishedAfter(TimeKeeper.getOldestAllowedVideoDate(new DateTime(System.currentTimeMillis())));
+        //searchRequest.setPublishedAfter(TimeKeeper.getOldestAllowedVideoDate(new DateTime(System.currentTimeMillis())));
         searchRequest.setFields("items(snippet/title), nextPageToken");
         searchRequest.setKey(DeveloperKey.DEVELOPER_KEY);
         return searchRequest;
@@ -82,12 +81,12 @@ public class YoutubeDataFetcher {
         YouTube.Search.List searchRequest = setUpSearchRequest(channelId);
         String nextToken = "";
         List<SearchResult> searchResults = new ArrayList<SearchResult>();
-        do {
-            searchRequest.setPageToken(nextToken);
+        //do {
+            //searchRequest.setPageToken(nextToken);
             SearchListResponse searchResponse = searchRequest.execute();
             searchResults.addAll(searchResponse.getItems());
-            nextToken = searchResponse.getNextPageToken();
-        } while (nextToken != null);
+            //nextToken = searchResponse.getNextPageToken();
+        //} while (nextToken != null);
 
         return searchResults;
     }

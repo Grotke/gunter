@@ -7,17 +7,20 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
+import com.josephcmontgomery.gunter.categorize.Series;
+import com.josephcmontgomery.gunter.categorize.Title;
+
 import java.util.ArrayList;
 
 /**
  * Created by Joseph on 7/18/2015.
  */
 //TODO Adapt this for series and channels.
-public class ExpandableListAdapter extends BaseExpandableListAdapter{
-    ArrayList<YoutubeData> data;
-    LayoutInflater inflater;
+public class ChildExpandableListAdapter extends BaseExpandableListAdapter{
+    private ArrayList<Series> data;
+    private LayoutInflater inflater;
 
-    public ExpandableListAdapter(ArrayList<YoutubeData> data){
+    public ChildExpandableListAdapter(ArrayList<Series> data){
         this.data = data;
         inflater = null;
     }
@@ -29,7 +32,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter{
     @Override
     //TODO throw exception when inflater isn't set
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        final String childText = (String) getChild(groupPosition,childPosition);
+        final String childText = ((Title) getChild(groupPosition,childPosition)).title;
 
         if(convertView == null){
             convertView = inflater.inflate(R.layout.list_item, null);
@@ -50,7 +53,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter{
         return data.size();
     }
 
-    public void addData(YoutubeData data){
+    /*public void addData(YoutubeData data){
         this.data.add(data);
         notifyDataSetChanged();
     }
@@ -58,7 +61,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter{
     public void update(ArrayList<YoutubeData> data){
         this.data = data;
         notifyDataSetChanged();
-    }
+    }*/
 
     @Override
     //TODO Adapt this for video ids.
@@ -68,7 +71,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter{
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return data.get(groupPosition).videoTitles.size();
+        return data.get(groupPosition).titles.size();
     }
 
     @Override
@@ -79,7 +82,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter{
 
     @Override
     public Object getGroup(int groupPosition) {
-        return data.get(groupPosition).channelTitle;
+        return data.get(groupPosition).seriesName;
     }
 
     @Override
@@ -94,7 +97,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter{
         if(convertView == null){
             convertView = inflater.inflate(R.layout.list_group,null);
         }
-
         TextView lblListHeader = (TextView) convertView.findViewById(R.id.lblListHeader);
         lblListHeader.setTypeface(null, Typeface.BOLD);
         lblListHeader.setText(headerTitle);
@@ -103,6 +105,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter{
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return data.get(groupPosition).videoTitles.get(childPosition);
+        return data.get(groupPosition).titles.get(childPosition);
     }
 }

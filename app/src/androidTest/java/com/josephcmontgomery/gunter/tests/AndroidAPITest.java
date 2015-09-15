@@ -10,7 +10,7 @@ import com.google.api.client.util.DateTime;
  */
 public class AndroidAPITest extends AndroidTestCase {
     /*public void testIfExpandableListAdapter_WhenGivenEmptyObjects_IsEmpty() throws Exception {
-        ExpandableListAdapter list = new ExpandableListAdapter(new ArrayList<String>(), new ArrayList<ArrayList<String>>());
+        ChildExpandableListAdapter list = new ChildExpandableListAdapter(new ArrayList<String>(), new ArrayList<ArrayList<String>>());
         assertEquals(list.isEmpty(), true);
     }
 
@@ -18,7 +18,7 @@ public class AndroidAPITest extends AndroidTestCase {
         ArrayList<String> parent = new ArrayList<String>();
         ArrayList<ArrayList<String>> children = new ArrayList<ArrayList<String>>();
         parent.add("Seananners");
-        ExpandableListAdapter list = new ExpandableListAdapter(parent, children);
+        ChildExpandableListAdapter list = new ChildExpandableListAdapter(parent, children);
         assertEquals(list.isEmpty(), false);
     }
 
@@ -30,7 +30,7 @@ public class AndroidAPITest extends AndroidTestCase {
         String[][] children = {{"Vid 1", "Vid 2"}, {"Vid 3","Vid 4"}};
         ArrayList<ArrayList<String>> childList = prepareDoubleList(children);
 
-        ExpandableListAdapter list = new ExpandableListAdapter(parentList,childList);
+        ChildExpandableListAdapter list = new ChildExpandableListAdapter(parentList,childList);
         assertEquals(list.getGroupCount(),2);
     }
 
@@ -40,7 +40,7 @@ public class AndroidAPITest extends AndroidTestCase {
         String[][] children = {{"Vid 1", "Vid 2"}, {"Vid 3","Vid 4","Vid 5","Vid 6"}};
         ArrayList<ArrayList<String>> childList = prepareDoubleList(children);
 
-        ExpandableListAdapter list = new ExpandableListAdapter(parentList,childList);
+        ChildExpandableListAdapter list = new ChildExpandableListAdapter(parentList,childList);
         assertEquals(list.getChildrenCount(1),4);
     }
 
