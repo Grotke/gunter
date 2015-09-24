@@ -104,7 +104,7 @@ public class CategorizationTools {
 	
 	//A delimiter that doesn't have a space or a delimiter to the right must be part of a word. 
 	private static String delimitersWithSpaceToTheRight(){
-		return "[:|-]+[\\s:|-]";
+		return "[:\\|/-]+[\\s:|-]";
 	}
 	
 	private static ArrayList<String> chunkify(String fragment){

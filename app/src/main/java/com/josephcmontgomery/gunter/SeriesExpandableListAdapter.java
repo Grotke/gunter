@@ -16,11 +16,11 @@ import java.util.ArrayList;
  * Created by Joseph on 7/18/2015.
  */
 //TODO Adapt this for series and channels.
-public class ChildExpandableListAdapter extends BaseExpandableListAdapter{
+public class SeriesExpandableListAdapter extends BaseExpandableListAdapter{
     private ArrayList<Series> data;
     private LayoutInflater inflater;
 
-    public ChildExpandableListAdapter(ArrayList<Series> data){
+    public SeriesExpandableListAdapter(ArrayList<Series> data){
         this.data = data;
         inflater = null;
     }

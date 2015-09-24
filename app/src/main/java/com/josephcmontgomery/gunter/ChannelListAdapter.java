@@ -8,24 +8,35 @@ import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
-import com.josephcmontgomery.gunter.categorize.Series;
-
 import java.util.ArrayList;
 
 /**
  * Created by Joseph on 9/14/2015.
  */
-public class MyListAdapter implements ListAdapter {
+public class ChannelListAdapter implements ListAdapter {
     private ArrayList<DisplayData> data;
     private LayoutInflater inflater;
 
-    public MyListAdapter(ArrayList<DisplayData> data){
+    public ChannelListAdapter(ArrayList<DisplayData> data){
         this.data = data;
         inflater = null;
     }
 
     public void setInflater(LayoutInflater inflater){
         this.inflater = inflater;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent){
+
+        String headerTitle = ((DisplayData) getItem(position)).channelTitle;
+        if(convertView == null){
+            convertView = inflater.inflate(R.layout.list_group,null);
+        }
+        TextView lblListHeader = (TextView) convertView.findViewById(R.id.lblListHeader);
+        lblListHeader.setTypeface(null, Typeface.BOLD);
+        lblListHeader.setText(headerTitle);
+        return convertView;
     }
 
     @Override
@@ -66,23 +77,6 @@ public class MyListAdapter implements ListAdapter {
     @Override
     public int getCount(){
         return data.size();
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent){
-
-        String headerTitle = ((DisplayData) getItem(position)).channelTitle;
-        if(convertView == null){
-            convertView = inflater.inflate(R.layout.list_group,null);
-        }
-        TextView lblListHeader = (TextView) convertView.findViewById(R.id.lblListHeader);
-        lblListHeader.setTypeface(null, Typeface.BOLD);
-        lblListHeader.setText(headerTitle);
-        return convertView;
-    }
-
-    public ArrayList<Series> getSeries(int position){
-        return data.get(position).seriesList;
     }
 
     @Override

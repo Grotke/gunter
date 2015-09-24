@@ -14,16 +14,18 @@ import java.util.ArrayList;
 
 public class SeriesDisplayActivity extends AppCompatActivity {
     ExpandableListView expListView;
-    ChildExpandableListAdapter listAdapter;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_series_display);
         ArrayList<Series> series = (ArrayList)getIntent().getSerializableExtra("series");
         setTitle(getIntent().getStringExtra("channel_title"));
+        setUpViewsAndAdapters(series);
+    }
+
+    private void setUpViewsAndAdapters(ArrayList<Series> series){
         expListView = (ExpandableListView) findViewById(R.id.series_list);
-        listAdapter = new ChildExpandableListAdapter(series);
+        SeriesExpandableListAdapter listAdapter = new SeriesExpandableListAdapter(series);
         listAdapter.setInflater((LayoutInflater)
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE));
         expListView.setAdapter(listAdapter);

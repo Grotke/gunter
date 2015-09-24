@@ -24,14 +24,15 @@ import java.util.List;
  * Created by Joseph on 7/29/2015.
  */
 public class YoutubeDataFetcher {
-    private YouTube youtube;
-    private ArrayList<YoutubeData> channelData;
+    private static YouTube youtube;
+    private static ArrayList<YoutubeData> channelData;
 
     public YoutubeDataFetcher(){
         setupYoutube();
     }
 
-    public ArrayList<YoutubeData> getChannelData(ArrayList<String> channelIds){
+    public static ArrayList<YoutubeData> getChannelData(ArrayList<String> channelIds){
+        setupYoutube();
         channelData = new ArrayList<YoutubeData>();
         for(int i = 0; i < channelIds.size(); i++){
             new RetrieveYoutubeChannelTask().execute(channelIds.get(i));
@@ -40,22 +41,19 @@ public class YoutubeDataFetcher {
         return channelData;
     }
 
-    private YoutubeData getChannelTitleAndVideos(String channelId)throws Exception{
+    private static YoutubeData getChannelTitleAndVideos(String channelId)throws Exception{
             YoutubeData channelData = new YoutubeData();
             Channel channel = getChannel(channelId);
             channelData.channelTitle = getChannelTitle(channel);
             channelData.videoTitles = getVideoTitles(getSearchResults(channelId));
-            /*if(channelData.videoTitles.isEmpty()){
-                channelData.videoTitles.add("No Recent Videos Found.");
-            }*/
             return channelData;
     }
 
-    private String getChannelTitle(Channel channel){
+    private static String getChannelTitle(Channel channel){
         return channel.getSnippet().getTitle();
     }
 
-    private Channel getChannel(String channelId) throws Exception{
+    private static Channel getChannel(String channelId) throws Exception{
         YouTube.Channels.List request = youtube.channels().list("snippet");
         request.setId(channelId);
         request.setKey(DeveloperKey.DEVELOPER_KEY);
@@ -64,38 +62,32 @@ public class YoutubeDataFetcher {
         return response.getItems().get(0);
     }
 
-    private YouTube.Search.List setUpSearchRequest(String channelId) throws Exception{
+    private static YouTube.Search.List setUpSearchRequest(String channelId) throws Exception{
         long resultsPerPage = 50;
         YouTube.Search.List searchRequest = youtube.search().list("snippet");
         searchRequest.setChannelId(channelId);
         searchRequest.setOrder("date");
         searchRequest.setType("video");
         searchRequest.setMaxResults(resultsPerPage);
-        //searchRequest.setPublishedAfter(TimeKeeper.getOldestAllowedVideoDate(new DateTime(System.currentTimeMillis())));
-        searchRequest.setFields("items(snippet/title), nextPageToken");
+        searchRequest.setFields("items(snippet/title)");
         searchRequest.setKey(DeveloperKey.DEVELOPER_KEY);
         return searchRequest;
     }
 
-    private List<SearchResult> getSearchResults(String channelId) throws Exception{
+    private static List<SearchResult> getSearchResults(String channelId) throws Exception{
         YouTube.Search.List searchRequest = setUpSearchRequest(channelId);
-        String nextToken = "";
         List<SearchResult> searchResults = new ArrayList<SearchResult>();
-        //do {
-            //searchRequest.setPageToken(nextToken);
-            SearchListResponse searchResponse = searchRequest.execute();
-            searchResults.addAll(searchResponse.getItems());
-            //nextToken = searchResponse.getNextPageToken();
-        //} while (nextToken != null);
+        SearchListResponse searchResponse = searchRequest.execute();
+        searchResults.addAll(searchResponse.getItems());
 
         return searchResults;
     }
 
-    private String getVideoTitle(SearchResult videoItem){
+    private static String getVideoTitle(SearchResult videoItem){
         return videoItem.getSnippet().getTitle();
     }
 
-    private ArrayList<String> getVideoTitles(List<SearchResult> searchResults){
+    private static ArrayList<String> getVideoTitles(List<SearchResult> searchResults){
         ArrayList<String> videoTitles = new ArrayList<String>();
         Iterator<SearchResult> itemItr = searchResults.iterator();
         while(itemItr.hasNext()){
@@ -105,7 +97,7 @@ public class YoutubeDataFetcher {
         return videoTitles;
     }
 
-    private void setupYoutube(){
+    private static void setupYoutube(){
         HttpTransport transport = new NetHttpTransport();
         JsonFactory jsonFactory = new JacksonFactory();
         HttpRequestInitializer initial  = new HttpRequestInitializer() {
@@ -117,12 +109,17 @@ public class YoutubeDataFetcher {
                 .setApplicationName("gunter").build();
     }
 
-    private class RetrieveYoutubeChannelTask extends AsyncTask<String, Void, Void> {
+    private static class RetrieveYoutubeChannelTask extends AsyncTask<String, Void, Void> {
         protected Void doInBackground(String... channelId) {
             try {
                 channelData.add(getChannelTitleAndVideos(channelId[0]));
             } catch (Exception e) {
-                Log.e("error", e.getMessage());
+                if(e.getMessage() != null){
+                    Log.e("error", e.getMessage());
+                }
+                else{
+                    Log.e("Can't get Exception", "EXCEPTION");
+                }
             }
             return null;
         }

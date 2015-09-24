@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,55 +14,58 @@ import android.widget.ListView;
 import com.commonsware.cwac.merge.MergeAdapter;
 import com.josephcmontgomery.gunter.categorize.Categorize;
 import com.josephcmontgomery.gunter.categorize.Series;
+import com.josephcmontgomery.gunter.categorize.Title;
 
 import java.util.ArrayList;
 
-//TODO Find way to only check videos that are recent as X.
 public class MainActivity extends ActionBarActivity {
-    private MyListAdapter listAdapter;
-    //private ChildExpandableListAdapter listAdapter;
     private ListView listView;
-    private YoutubeDataFetcher fetcher;
     private ArrayList<String> channelIds;
+    private ChannelListAdapter listAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        MergeAdapter thisAdapter = new MergeAdapter();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.d("EARLY CREATE", "All good here");
-        /*fetcher = new YoutubeDataFetcher();
-        expListView = (ExpandableListView) findViewById(R.id.channel_list);
-        createChannelIds();
-        listAdapter = new ChildExpandableListAdapter(fetcher.getChannelData(channelIds));
-        listAdapter.setInflater((LayoutInflater)
-                getSystemService(Context.LAYOUT_INFLATER_SERVICE));
-        expListView.setAdapter(listAdapter);*/
-        fetcher = new YoutubeDataFetcher();
-        listView = (ListView) findViewById(R.id.main_list);
         createNewChannelIds();
-        Log.d("MID CREATE", "All good here");
-        listAdapter = new MyListAdapter(processYoutubeData(fetcher.getChannelData(channelIds)));
-        //listAdapter = new ChildExpandableListAdapter(processYoutubeData(fetcher.getChannelData(channelIds)).get(0).seriesList);
-        Log.d("LATE MID CREATE", "All good here");
+        setUpViewsAndAdapters(processYoutubeData(YoutubeDataFetcher.getChannelData(channelIds)));
+    }
+
+    private void setUpViewsAndAdapters(ArrayList<DisplayData> dataToView){
+        MergeAdapter mergeAdapter = new MergeAdapter();
+        listView = (ListView) findViewById(R.id.main_list);
+        listAdapter = new ChannelListAdapter(dataToView);
         listAdapter.setInflater((LayoutInflater)
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE));
-        thisAdapter.addAdapter(listAdapter);
-        listView.setAdapter(thisAdapter);
-        Log.d("LATE CREATE", "All good here");
+        mergeAdapter.addAdapter(listAdapter);
+        listView.setAdapter(mergeAdapter);
+        setUpViewClickListener();
+    }
 
+    private void setUpViewClickListener(){
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> a, View v, int position,
                                     long id) {
-
                 Intent intent = new Intent(MainActivity.this, SeriesDisplayActivity.class);
-                intent.putExtra("channel_title", ((DisplayData)a.getItemAtPosition(position)).channelTitle);
-                intent.putExtra("series", ((DisplayData) a.getItemAtPosition(position)).seriesList);
-
+                DisplayData data = (DisplayData) a.getItemAtPosition(position);
+                intent.putExtra("channel_title", data.channelTitle);
+                intent.putExtra("series", data.seriesList);
                 startActivity(intent);
             }
         });
+    }
+
+    private ArrayList<DisplayData> processYoutubeData(ArrayList<YoutubeData> data){
+        ArrayList<DisplayData> dispData = new ArrayList<DisplayData>();
+        for(YoutubeData yData: data){
+            ArrayList<Series> series = Categorize.categorize(yData.channelTitle, yData.videoTitles);
+            if(series.isEmpty()){
+                series.add(new Series(yData.channelTitle, "No Videos Found.", new ArrayList<Title>()));
+            }
+            dispData.add(new DisplayData(yData.channelTitle, series));
+        }
+        return dispData;
     }
 
     @Override
@@ -90,15 +92,17 @@ public class MainActivity extends ActionBarActivity {
 
     private void createChannelIds(){
         channelIds = new ArrayList<String>();
-        channelIds.add("UCqg2eLFNUu3QN3dttNeOWkw");
-        channelIds.add("UCVdtW2E4vwvf8yh4FY5us9A");
-        channelIds.add("UCN-Klifn9C7kINwpIA0uOHw");
-        channelIds.add("UCV3kayetaucpObzusJbk9ag");
-        channelIds.add("UCq54nlcoX-0pLcN5RhxHyug");
+        channelIds.add("UCqg2eLFNUu3QN3dttNeOWkw"); //iHasCupquake
+        channelIds.add("UCVdtW2E4vwvf8yh4FY5us9A"); //SSoHPKC
+        channelIds.add("UCN-Klifn9C7kINwpIA0uOHw"); //Galm
+        channelIds.add("UCV3kayetaucpObzusJbk9ag"); //Noah Baker
+        channelIds.add("UCq54nlcoX-0pLcN5RhxHyug"); //Seananners
     }
 
     private void createNewChannelIds(){
         channelIds = new ArrayList<String>();
+        channelIds.add("UCVdtW2E4vwvf8yh4FY5us9A"); //SSoHPKC
+        channelIds.add("UCV3kayetaucpObzusJbk9ag"); //Noah Baker
         channelIds.add("UC0M0rxSz3IF0CsSour1iWmw"); //AVGN
         channelIds.add("UCCbfB3cQtkEAiKfdRQnfQvw"); //Jesse Cox
         channelIds.add("UCy1Ms_5qBTawC-k7PVjHXKQ"); //TotalBiscuit
@@ -117,23 +121,5 @@ public class MainActivity extends ActionBarActivity {
         channelIds.add("UCyZA5Ysa33gA89sCdWJQojQ"); //Caveman
         channelIds.add("UCURh19hEVawK-H0Wl7KnR5Q"); //OhmWrecker
         channelIds.add("UCOHBVUV8aDg4tQiHnUqi_QA"); //Mathas
-    }
-
-    private ArrayList<DisplayData> processYoutubeData(ArrayList<YoutubeData> data){
-        ArrayList<DisplayData> dispData = new ArrayList<DisplayData>();
-        for(YoutubeData yData: data){
-            /*ChildExpandableListAdapter adapt = new ChildExpandableListAdapter(Categorize.categorize(yData.channelTitle, yData.videoTitles));
-            adapt.setInflater((LayoutInflater)
-                    getSystemService(Context.LAYOUT_INFLATER_SERVICE));*/
-            ArrayList<Series> series = Categorize.categorize(yData.channelTitle, yData.videoTitles);
-            for(Series s: series){
-                Log.e(s.channelName, " has series " + s.seriesName);
-            }
-            DisplayData newData = new DisplayData(yData.channelTitle, series);
-            Log.e(newData.channelTitle, " has " + newData.seriesList.size() + " series.");
-            dispData.add(newData);
-        }
-        Log.e("DISPLAY STATE", "Processing all finished");
-        return dispData;
     }
 }
