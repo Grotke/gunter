@@ -11,14 +11,14 @@ public final class DatabaseContract {
 
     public static abstract class Channel implements BaseColumns{
         public static final String TABLE_NAME = "channel";
-        public static final String COLUMN_NAME_CHANNEL_ID = "channel_id";
+        public static final String COLUMN_NAME_ID = "id";
         public static final String COLUMN_NAME_NAME = "name";
         public static final String COLUMN_NAME_SUBSCRIBED = "subscribed";
     }
 
     public static abstract class Series implements BaseColumns{
         public static final String TABLE_NAME = "series";
-        public static final String COLUMN_NAME_SERIES_ID = "series_id";
+        public static final String COLUMN_NAME_ID = "id";
         public static final String COLUMN_NAME_CHANNEL_ID = "channel_id";
         public static final String COLUMN_NAME_TITLE = "title";
         public static final String COLUMN_NAME_IGNORED = "ignored";
@@ -26,7 +26,7 @@ public final class DatabaseContract {
 
     public static abstract class Video implements BaseColumns{
         public static final String TABLE_NAME = "video";
-        public static final String COLUMN_NAME_VIDEO_ID = "video_id";
+        public static final String COLUMN_NAME_ID = "id";
         public static final String COLUMN_NAME_CHANNEL_ID = "channel_id";
         public static final String COLUMN_NAME_SERIES_ID = "series_id";
         public static final String COLUMN_NAME_TITLE = "title";
@@ -35,6 +35,7 @@ public final class DatabaseContract {
 
     public static abstract class Chunk implements BaseColumns{
         public static final String TABLE_NAME = "chunk";
+        public static final String COLUMN_NAME_ID = "id";
         public static final String COLUMN_NAME_CHANNEL_ID = "channel_id";
         public static final String COLUMN_NAME_VIDEO_ID = "video_id";
         public static final String COLUMN_NAME_TITLE = "title";
