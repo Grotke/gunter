@@ -1,4 +1,4 @@
-package com.josephcmontgomery.gunter;
+package com.josephcmontgomery.gunter.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

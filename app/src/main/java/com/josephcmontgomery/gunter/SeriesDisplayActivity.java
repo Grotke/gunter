@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.widget.ExpandableListView;
 
 import com.josephcmontgomery.gunter.categorize.Series;
+import com.josephcmontgomery.gunter.display.SeriesExpandableListAdapter;
 
 import java.util.ArrayList;
 

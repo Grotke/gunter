@@ -1,4 +1,4 @@
-package com.josephcmontgomery.gunter;
+package com.josephcmontgomery.gunter.youtube;
 
 import java.util.ArrayList;
 

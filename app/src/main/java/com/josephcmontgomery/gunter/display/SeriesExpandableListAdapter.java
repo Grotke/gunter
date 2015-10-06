@@ -1,4 +1,4 @@
-package com.josephcmontgomery.gunter;
+package com.josephcmontgomery.gunter.display;
 
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
+import com.josephcmontgomery.gunter.R;
 import com.josephcmontgomery.gunter.categorize.Series;
 import com.josephcmontgomery.gunter.categorize.Title;
 

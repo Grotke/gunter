@@ -1,4 +1,4 @@
-package com.josephcmontgomery.gunter;
+package com.josephcmontgomery.gunter.display;
 
 import com.josephcmontgomery.gunter.categorize.Series;
 

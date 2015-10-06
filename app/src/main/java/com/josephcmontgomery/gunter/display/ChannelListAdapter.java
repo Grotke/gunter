@@ -1,4 +1,4 @@
-package com.josephcmontgomery.gunter;
+package com.josephcmontgomery.gunter.display;
 
 import android.database.DataSetObserver;
 import android.graphics.Typeface;
@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+
+import com.josephcmontgomery.gunter.R;
 
 import java.util.ArrayList;
 

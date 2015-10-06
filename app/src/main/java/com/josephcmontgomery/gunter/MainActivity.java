@@ -15,6 +15,10 @@ import com.commonsware.cwac.merge.MergeAdapter;
 import com.josephcmontgomery.gunter.categorize.Categorize;
 import com.josephcmontgomery.gunter.categorize.Series;
 import com.josephcmontgomery.gunter.categorize.Title;
+import com.josephcmontgomery.gunter.display.ChannelListAdapter;
+import com.josephcmontgomery.gunter.display.DisplayData;
+import com.josephcmontgomery.gunter.youtube.YoutubeData;
+import com.josephcmontgomery.gunter.youtube.YoutubeDataFetcher;
 
 import java.util.ArrayList;
 
