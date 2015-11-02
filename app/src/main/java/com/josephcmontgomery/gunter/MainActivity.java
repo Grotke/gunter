@@ -1,9 +1,12 @@
 package com.josephcmontgomery.gunter;
 
+import android.accounts.AccountManager;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,6 +15,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.commonsware.cwac.merge.MergeAdapter;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.services.youtube.YouTubeScopes;
 import com.josephcmontgomery.gunter.categorize.Categorize;
 import com.josephcmontgomery.gunter.categorize.Series;
 import com.josephcmontgomery.gunter.categorize.Title;
@@ -21,18 +26,62 @@ import com.josephcmontgomery.gunter.youtube.YoutubeData;
 import com.josephcmontgomery.gunter.youtube.YoutubeDataFetcher;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity{
     private ListView listView;
     private ArrayList<String> channelIds;
     private ChannelListAdapter listAdapter;
+    private GoogleAccountCredential credential;
+    private ArrayList<GoogleAccountCredential> creds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        createNewChannelIds();
-        setUpViewsAndAdapters(processYoutubeData(YoutubeDataFetcher.getChannelData(channelIds)));
+        //tryAuth();
+        YoutubeDataFetcher.getSubscriptionsFromUserAccount(this);
+        //createNewChannelIds();
+        //setUpViewsAndAdapters(processYoutubeData(YoutubeDataFetcher.getChannelData(channelIds)));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e("Entered Activity result", "Got Here");
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK){
+            Log.e("RESUKT", "Got Result");
+        }
+        switch (requestCode) {
+            case 1:
+                Log.e("ActivResult", "Got Here");
+                if (data != null && data.getExtras() != null) {
+
+                    String accountName = data.getExtras().getString(AccountManager.KEY_ACCOUNT_NAME);
+                    if (accountName != null) {
+                        Log.e("ActivSet", accountName);
+                        credential.setSelectedAccountName(accountName);
+                        creds.add(credential);
+                        YoutubeDataFetcher.startThingy(this);
+                    }
+                }
+                break;
+
+            case 2:
+                if (resultCode == Activity.RESULT_OK) {
+                    // replay the same operations
+                    YoutubeDataFetcher.startThingy(this);
+                }
+                break;
+        }
+    }
+
+    public void setCredential(GoogleAccountCredential cred){
+        credential = cred;
+    }
+
+    public void setCredentialList(ArrayList<GoogleAccountCredential> credentials){
+        creds = credentials;
     }
 
     private void setUpViewsAndAdapters(ArrayList<DisplayData> dataToView){
@@ -125,5 +174,21 @@ public class MainActivity extends ActionBarActivity {
         channelIds.add("UCyZA5Ysa33gA89sCdWJQojQ"); //Caveman
         channelIds.add("UCURh19hEVawK-H0Wl7KnR5Q"); //OhmWrecker
         channelIds.add("UCOHBVUV8aDg4tQiHnUqi_QA"); //Mathas
+    }
+
+    public void tryAuth(){
+        credential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Arrays.asList(YouTubeScopes.YOUTUBE_READONLY));
+        //SharedPreferences settings = MainActivity.getPreferences(Context.MODE_PRIVATE);
+        //activ.setCredential(credential);
+        //activ.setCredentialList(credentials);
+        creds = new ArrayList<GoogleAccountCredential>();
+        Intent intent = credential.newChooseAccountIntent();
+        //Log.e("INTENT NAME", intent.getComponent().getClassName());
+        startActivityForResult(intent, 1);
+        //new RetrieveUserDataTask().execute(activ);
+        /*while(credentials.size() < 1){
+            //Log.e("STATUS", "not done");
+        }*/
+        Log.e("DONE", "Done with credential " + credential.getSelectedAccountName());
     }
 }

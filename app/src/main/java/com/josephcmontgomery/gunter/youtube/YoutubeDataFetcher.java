@@ -1,8 +1,12 @@
 package com.josephcmontgomery.gunter.youtube;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.android.gms.auth.UserRecoverableAuthException;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpTransport;
@@ -10,13 +14,19 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.YouTubeScopes;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelListResponse;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
+import com.google.api.services.youtube.model.Subscription;
+import com.google.common.collect.Lists;
+import com.josephcmontgomery.gunter.Auth;
+import com.josephcmontgomery.gunter.MainActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,9 +36,109 @@ import java.util.List;
 public class YoutubeDataFetcher {
     private static YouTube youtube;
     private static ArrayList<YoutubeData> channelData;
+    private static GoogleAccountCredential credential;
+    private static ArrayList<GoogleAccountCredential> credentials = new ArrayList<GoogleAccountCredential>();
 
     public YoutubeDataFetcher(){
-        setupYoutube();
+        //setupYoutube();
+    }
+
+    public static ArrayList<String> getSubscriptionsFromUserAccount(MainActivity activ){
+        final int REQUEST_ACCOUNT_PICKER = 1;
+        List<String> scopes = Lists.newArrayList("https://www.googleapis.com/auth/youtube.readonly");
+       // try {
+            // Authorize the request.
+            //Credential credential = Auth.authorize(scopes, "readsubscriptions");
+            /*GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(activ.getApplicationContext(), Arrays.asList(YouTubeScopes.YOUTUBE_READONLY));
+            //SharedPreferences settings = MainActivity.getPreferences(Context.MODE_PRIVATE);
+            activ.setCredential(credential);
+            activ.startActivityForResult(credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);*/
+            credential = GoogleAccountCredential.usingOAuth2(activ.getApplicationContext(), Arrays.asList(YouTubeScopes.YOUTUBE_READONLY));
+            //SharedPreferences settings = MainActivity.getPreferences(Context.MODE_PRIVATE);
+            activ.setCredential(credential);
+            activ.setCredentialList(credentials);
+            Intent intent = credential.newChooseAccountIntent();
+            //Log.e("INTENT NAME", intent.getComponent().getClassName());
+            activ.startActivityForResult(intent, REQUEST_ACCOUNT_PICKER);
+            //new RetrieveUserDataTask().execute(activ);
+            /*while(credentials.size() < 1){
+                //Log.e("STATUS", "not done");
+            }*/
+            Log.e("DONE", "Done with credential " + credential.getSelectedAccountName());
+
+// YouTube client
+           /* service =
+                    new com.google.api.services.youtube.YouTube.Builder(transport, jsonFactory, credential)
+                            .setApplicationName("Google-YouTubeAndroidSample/1.0").build();*/
+
+            // This object is used to make YouTube Data API requests.
+            /*Log.e("FIRST", "Got Here");
+            youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT, Auth.JSON_FACTORY, credential).setApplicationName(
+                    "gunter").build();
+
+            YouTube.Subscriptions.List subRequest = youtube.subscriptions().list("snippet");
+            subRequest.setMine(true);
+            List<Subscription> subs = subRequest.execute().getItems();
+            for(Subscription sub: subs){
+                System.out.println("Got " + sub.getSnippet().getChannelTitle());
+                System.out.println();
+            }
+            Log.e("SECOND", "Got Here");
+        } catch (GoogleJsonResponseException e) {
+            System.err.println("GoogleJsonResponseException code: " + e.getDetails().getCode() + " : "
+                    + e.getDetails().getMessage());
+            e.printStackTrace();
+
+        } catch (IOException e) {
+            System.err.println("IOException: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Throwable t) {
+            System.err.println("Throwable: " + t.getMessage());
+            t.printStackTrace();
+        }*/
+        return null;
+    }
+
+    public static void startThingy(MainActivity activ){
+        new RetrieveUserDataTask().execute(activ);
+    }
+
+    public static void startThing(MainActivity activ){
+        Log.e("FIRST", "Got Here");
+        youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT, Auth.JSON_FACTORY, credential).setApplicationName(
+                "gunter").build();
+        try{
+            Log.e("IN DA BLOCk", "RIGHT HERE");
+            Log.e("TOKEN", credential.getToken());
+        YouTube.Subscriptions.List subRequest = youtube.subscriptions().list("snippet");
+        subRequest.setMine(true);
+            Log.e("TOKEN", credential.getToken());
+            //subRequest.setOauthToken(credential.getToken());
+            //subRequest.setOauthToken(credential.getToken());
+            Log.e("EXECUTE", "HERE");
+            subRequest.setMaxResults(20L);
+        List<Subscription> subs = subRequest.execute().getItems();
+            Log.e("NOT YET", "NOPE");
+        for(Subscription sub: subs){
+            System.out.println("Got " + sub.getSnippet().getTitle());
+            System.out.println();
+        }
+        Log.e("SECOND", "Got Here");
+    } catch(UserRecoverableAuthException e){
+            activ.startActivityForResult(e.getIntent(), 2);
+        }
+        catch (GoogleJsonResponseException e) {
+        System.err.println("GoogleJsonResponseException code: " + e.getDetails().getCode() + " : "
+                + e.getDetails().getMessage());
+        e.printStackTrace();
+
+    } catch (IOException e) {
+        System.err.println("IOException: " + e.getMessage());
+        e.printStackTrace();
+    } catch (Throwable t) {
+        System.err.println("Throwable: " + t.getMessage());
+        t.printStackTrace();
+    }
     }
 
     public static ArrayList<YoutubeData> getChannelData(ArrayList<String> channelIds){
@@ -124,4 +234,41 @@ public class YoutubeDataFetcher {
             return null;
         }
     }
+
+    public static GoogleAccountCredential getCredential(){
+        return credential;
+    }
+
+    private static class RetrieveUserDataTask extends AsyncTask<MainActivity, Void, Void> {
+        final int REQUEST_ACCOUNT_PICKER = 1;
+        private GoogleAccountCredential credential;
+        @Override
+        protected void onPreExecute(){
+            credential = YoutubeDataFetcher.getCredential();
+        }
+
+        protected Void doInBackground(MainActivity... mainActivities) {
+            try {
+                /*MainActivity activ = mainActivities[0];
+                //credential = GoogleAccountCredential.usingOAuth2(activ.getApplicationContext(), Arrays.asList(YouTubeScopes.YOUTUBE_READONLY));
+                //SharedPreferences settings = MainActivity.getPreferences(Context.MODE_PRIVATE);
+                //activ.setCredential(credential);
+                Intent intent = credential.newChooseAccountIntent();
+                Log.e("INTENT NAME", intent.getComponent().getClassName());
+                //activ.startActivityForResult(credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
+                Log.e("START", "Started activity result");*/
+                startThing(mainActivities[0]);
+            } catch (Exception e) {
+                if(e.getMessage() != null){
+                    Log.e("error", e.getMessage());
+                }
+                else{
+                    Log.e("Can't get Exception", "EXCEPTION");
+                }
+            }
+            return null;
+        }
+    }
+
+
 }
