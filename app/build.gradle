@@ -34,10 +34,6 @@ dependencies {
     compile 'com.commonsware.cwac:merge:1.1.+'
     compile 'com.commonsware.cwac:sacklist:1.0.0'
     compile files('libs/google-oauth-client-java6-1.20.0.jar')
-   // compile 'com.google.api-client:google-api-client:1.19.1'
-    //compile 'com.google.android.gms:play-services-identity:8.1.0'
-    //compile 'com.google.android.gms:play-services-measurement:8.1.0'
-    //compile 'com.google.android.gms:play-services:8.1.0'
     compile 'com.google.android.gms:play-services-base:8.1.0'
     compile files('libs/google-api-client-android-1.20.0.jar')
 }
