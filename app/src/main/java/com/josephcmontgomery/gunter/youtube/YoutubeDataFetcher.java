@@ -2,6 +2,7 @@ package com.josephcmontgomery.gunter.youtube;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -49,6 +50,38 @@ public class YoutubeDataFetcher {
 
     public static void startThingy(MainActivity activ){
         new RetrieveUserDataTask().execute(activ);
+    }
+    public static void searchForReal(String searchTerm){
+        new RetrieveYoutubeChannelTask().execute(searchTerm);
+    }
+    public static void search(String searchTerm){
+        setupYoutube();
+        try {
+            ArrayList<String> strings = new ArrayList<String>();
+            YouTube.Search.List search = youtube.search().list("snippet");
+            search.setKey(DeveloperKey.DEVELOPER_KEY);
+            search.setQ(searchTerm);
+            search.setMaxResults(5L);
+            search.setType("channel,items(snippet/title,snippet/channelId)");
+            SearchListResponse searchResponse = search.execute();
+            List<SearchResult> results = searchResponse.getItems();
+            for (SearchResult result : results) {
+                Log.e("TITLE", result.getSnippet().getTitle());
+                Log.e("ID", result.getSnippet().getChannelId());
+                strings.add(result.getSnippet().getChannelId());
+            }
+            String bigID = TextUtils.join(",", strings);
+            YouTube.Channels.List channelSearch = youtube.channels().list("statistics");
+            channelSearch.setKey(DeveloperKey.DEVELOPER_KEY);
+            channelSearch.setId(bigID);
+            List<Channel> channelResponse = channelSearch.execute().getItems();
+            for(Channel chan: channelResponse){
+                Log.e("CHANNEL STATS", String.valueOf(chan.getStatistics().getSubscriberCount()));
+            }
+        }
+        catch(Exception e){
+            Log.e("ERROR", e.getMessage());
+        }
     }
 
     public static void startThing(MainActivity activ){
@@ -170,7 +203,8 @@ public class YoutubeDataFetcher {
     private static class RetrieveYoutubeChannelTask extends AsyncTask<String, Void, Void> {
         protected Void doInBackground(String... channelId) {
             try {
-                channelData.add(getChannelTitleAndVideos(channelId[0]));
+                //channelData.add(getChannelTitleAndVideos(channelId[0]));
+                search(channelId[0]);
             } catch (Exception e) {
                 if(e.getMessage() != null){
                     Log.e("error", e.getMessage());
