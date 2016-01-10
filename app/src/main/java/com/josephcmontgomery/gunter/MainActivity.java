@@ -35,7 +35,17 @@ public class MainActivity extends ActionBarActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //launchSubscriptionPull();
+        launchVideoPull();
+    }
+
+    private void launchSubscriptionPull(){
         YoutubeDataFetcher.getSubscriptionsFromUserAccount(this);
+    }
+
+    private void launchVideoPull(){
+        createNewChannelIds();
+        setUpViewsAndAdapters(processYoutubeData(YoutubeDataFetcher.getChannelData(channelIds)));
     }
 
     @Override
@@ -49,7 +59,7 @@ public class MainActivity extends ActionBarActivity{
                         String accountName = data.getExtras().getString(AccountManager.KEY_ACCOUNT_NAME);
                         if (accountName != null) {
                             credential.setSelectedAccountName(accountName);
-                            YoutubeDataFetcher.startThingy(this);
+                            YoutubeDataFetcher.getUserData(this);
                         }
                     }
                     break;
@@ -57,7 +67,7 @@ public class MainActivity extends ActionBarActivity{
                 case Auth.REQUEST_AUTHORIZATION:
                     if (resultCode == Activity.RESULT_OK) {
                         // replay the same operations
-                        YoutubeDataFetcher.startThingy(this);
+                        YoutubeDataFetcher.getUserData(this);
                     }
                     break;
             }
@@ -125,15 +135,6 @@ public class MainActivity extends ActionBarActivity{
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void createChannelIds(){
-        channelIds = new ArrayList<String>();
-        channelIds.add("UCqg2eLFNUu3QN3dttNeOWkw"); //iHasCupquake
-        channelIds.add("UCVdtW2E4vwvf8yh4FY5us9A"); //SSoHPKC
-        channelIds.add("UCN-Klifn9C7kINwpIA0uOHw"); //Galm
-        channelIds.add("UCV3kayetaucpObzusJbk9ag"); //Noah Baker
-        channelIds.add("UCq54nlcoX-0pLcN5RhxHyug"); //Seananners
     }
 
     private void createNewChannelIds(){

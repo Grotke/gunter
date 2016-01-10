@@ -47,11 +47,11 @@ public class YoutubeDataFetcher {
         return null;
     }
 
-    public static void startThingy(MainActivity activ){
+    public static void getUserData(MainActivity activ){
         new RetrieveUserDataTask().execute(activ);
     }
 
-    public static void startThing(MainActivity activ){
+    private static void getSubscriptions(MainActivity activ){
         youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT, Auth.JSON_FACTORY, credential).setApplicationName(
                 "gunter").build();
         try{
@@ -190,7 +190,7 @@ public class YoutubeDataFetcher {
     private static class RetrieveUserDataTask extends AsyncTask<MainActivity, Void, Void> {
         protected Void doInBackground(MainActivity... mainActivities) {
             try {
-                startThing(mainActivities[0]);
+                getSubscriptions(mainActivities[0]);
             } catch (Exception e) {
                 if(e.getMessage() != null){
                     Log.e("error", e.getMessage());

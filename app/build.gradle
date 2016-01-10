@@ -30,10 +30,13 @@ repositories {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:22.1.1'
+    /*compile ('com.google.apis:google-api-services-youtube:v3-rev142-1.20.0') {
+        exclude group: 'org.apache.httpcomponents', module: 'httpclient' //by both name and g
+    }*/
     compile 'com.google.apis:google-api-services-youtube:v3-rev142-1.20.0'
     compile 'com.commonsware.cwac:merge:1.1.+'
     compile 'com.commonsware.cwac:sacklist:1.0.0'
     compile files('libs/google-oauth-client-java6-1.20.0.jar')
-    compile 'com.google.android.gms:play-services-base:8.1.0'
+    compile 'com.google.android.gms:play-services-base:8.3.0'
     compile files('libs/google-api-client-android-1.20.0.jar')
 }
