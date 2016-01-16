@@ -16,7 +16,9 @@ So the first and last video would be grouped together since they're part of the 
  
 This app determines which section of the title is relevant for grouping videos together into a series.
  
-This app was meant to deal with the fact that there's no way to ignore or follow a series. The closest thing is a playlist, which is managed by the channel. 
+This app was created to deal with the fact that there's no way to ignore or follow a series. 
+
+The closest thing is a playlist, which is managed by the channel. 
 But some channels don't maintain playlists and others don't group videos in a useful way. They may group all three videos under GMOD even though they represent two different game modes.
 Playlists also don't allow you to only be notified when a video is added to a certain playlist. Plus in order to get notified, you'd have to be subscribed to the channel.
  
@@ -24,8 +26,7 @@ If you're subscribed to a channel that has 4 or 5 series with irregular upload f
 This app was intended to allow you to follow someone and some of their series without officially subscribing to them.
 
 ## Issues
-At the time of abandonment, videos are grouped mostly correctly. By that I mean most channels are grouped almost perfectly while a few channels have a lot of weird problems. 
-This is mostly due to those weird channels having unusual or inconsistent naming conventions.
+At the time of abandonment, videos are grouped mostly correctly. By that I mean most channels are grouped almost perfectly while a few channels have a lot of weird problems. This is mostly due to those weird channels having unusual or inconsistent naming conventions.
 
 Pulling videos is quite slow even with just 18 channels, maybe 30 seconds or so. There's no progress bar or anything either. That was to be fixed later.
 
@@ -34,6 +35,7 @@ Videos were also supposed to be viewed within the app. It just works with titles
 
 ## Building Instructions
 If you wanted to build this project for whatever reason, I imagine you'd have to import it to Android Studio since that's what I developed it in. You might be able to use Eclipse too.
+
 First thing you'd need is your own developer key for the YouTube API. Then you'd put it in a public string field called `DEVELOPER_KEY` in a class called `DeveloperKey`.
 
 In the MainActivity's `onCreate()`, the app can be toggled between pulling videos from a hardcoded list of channels and pulling a user's channel subscriptions by commenting out the `launchSubscriptionPull()` or `launchVideoPull()`.
