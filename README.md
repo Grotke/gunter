@@ -45,3 +45,6 @@ First thing you'd need is your own developer key for the YouTube API. Then you'd
 In the MainActivity's `onCreate()`, the app can be toggled between pulling videos from a hardcoded list of channels and pulling a user's channel subscriptions by commenting out the `launchSubscriptionPull()` or `launchVideoPull()`.
 
 I imagine that's all you'd need to get this project to work, leaving room for inevitable conflicts and compilation errors that mysteriously disappear the next day.
+
+## Abandonment
+This project was abandoned mostly because I don't watch YouTube videos nearly as much as I used to and therefore it's much less useful for me. I also think it would be better categorizing on a server rather than in the app.
