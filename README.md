@@ -1,6 +1,10 @@
 # Gunter
 Android app that categorizes YouTube gaming videos.
-## Insert Screenshots here
+
+<img src="https://github.com/Grotke/screenshots/blob/master/v0.1.1channellist.png" width="300">
+<img src="https://github.com/Grotke/screenshots/blob/master/v0.1.1galm_unexpanded.png" width="300">
+<img src="https://github.com/Grotke/screenshots/blob/master/v0.1.1galm_expanded.png" width="300">
+
 ## Description and Background
 This project is unfinished and won't be developed any further.
 
