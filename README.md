@@ -29,7 +29,7 @@ Playlists also don't allow you to only be notified when a video is added to a ce
 If you're subscribed to a channel that has 4 or 5 series with irregular upload frequencies, but you only like 1 or 2 series, you'd be notified of every video even though most aren't of interest to you. 
 This app was intended to allow you to follow someone and some of their series without officially subscribing to them.
 
-Go to the website at the top for more info about the development process.
+Go to http://www.josephcmontgomery.com/projects.html#gunter for more info about the development process including a development log.
 
 ## Issues
 At the time of abandonment, videos are grouped mostly correctly. By that I mean most channels are grouped almost perfectly while a few channels have a lot of weird problems. This is mostly due to those weird channels having unusual or inconsistent naming conventions.
